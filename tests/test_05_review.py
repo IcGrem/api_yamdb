@@ -8,7 +8,9 @@ class Test05ReviewAPI:
     @pytest.mark.django_db(transaction=True)
     def test_01_review_not_auth(self, client, user_client):
         titles, _, _ = create_titles(user_client)
+        print(titles[0]["id"])
         response = client.get(f'/api/v1/titles/{titles[0]["id"]}/reviews/')
+        print(response)
         assert response.status_code != 404, \
             'Страница `/api/v1/titles/{title_id}/reviews/` не найдена, проверьте этот адрес в *urls.py*'
         assert response.status_code == 200, \

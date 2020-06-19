@@ -17,9 +17,9 @@ from .views import (
 
 
 router = DefaultRouter()
-router.register('users', UserViewSet)
 router.register('users/me', UserViewSet)
 router.register('users/<username>', UserViewSet)
+router.register('users', UserViewSet)
 router.register('titles', TitleViewSet)
 router.register('categories', CategoryViewSet)
 router.register('genres', GenreViewSet)

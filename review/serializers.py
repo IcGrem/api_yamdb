@@ -96,32 +96,27 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
 
 
+
+class CustomSlugRelatedField(serializers.SlugRelatedField):
+    def to_representation(self, obj):
+        return {'name': obj.name, 'slug': obj.slug}
+
+
 class TitleSerializer(serializers.ModelSerializer):
-    genre = GenreSerializer(many=True, read_only=True)
-    #rating = serializers.FloatField(source=Review.objects.filter(title=title.name).aggregate(Avg('score'))[score__avg])
-    #category = CategorySerializer(read_only=True)
-    #category = serializers.RelatedField(source='category', read_only=True)
-    #category = serializers.CharField(source="category", read_only = True)
-    category = serializers.SerializerMethodField(read_only=True)
     rating = serializers.SerializerMethodField(read_only=True)
-    
+    category = CustomSlugRelatedField(queryset=Category.objects.all(), slug_field='slug')
+    genre = CustomSlugRelatedField(queryset=Genre.objects.all(), slug_field='slug', many=True)
     class Meta:
         fields = ('id', 'name', 'year', 'rating', 'description', 'genre', 'category')
         model = Title
-        
+    
     def get_rating(self, title):
         scores = Review.objects.filter(title_id=title.id).aggregate(Avg('score'))
         if scores:
             rating = scores['score__avg']
-            print(rating)
+            print('рэйтинг -', rating)
             return rating
         return None
-
-    def get_category(self, title):
-        print('тайтл',self.context['request'])
-        category = Category.objects.filter(categories=title.id).values('name', 'slug')
-        print('Категории', category)
-        return category
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -131,44 +126,13 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date')
         model = Review
-        #read_only_fields = ('title', )
+        read_only_fields = ('id',)
 
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
 
     class Meta:
-        fields = ('id', 'author', 'text', 'created')#, 'review'
+        fields = ('id', 'author', 'text', 'created', 'review')
         model = Comment
 
-
-# class FollowSerializer(serializers.ModelSerializer):
-#     user = serializers.ReadOnlyField(source='user.username')
-#     following = serializers.CharField(source='following.username')
-
-#     class Meta:
-#         fields = ('id', 'user', 'following')
-#         model = Follow
-
-
-# class FollowSerializer(serializers.ModelSerializer):
-#     user = serializers.ReadOnlyField(source='user.username')
-#     following = serializers.CharField(source='following.username')
-#     class Meta:
-#         fields = ('id', 'user', 'following')
-#         model = Follow
-       
-#     def validate(self, data):
-#         f = data['following']
-#         following = get_object_or_404(User, username=f['username'])
-#         user = self.context['request'].user
-#         if not following:
-#             raise serializers.ValidationError(f"Автор не найден {following}") 
-#         if user == following:
-#             raise serializers.ValidationError(f"Нельзя подписаться на самого себя") 
-#         follows = Follow.objects.filter(user=user, following=following)
-#         if follows:
-#             raise serializers.ValidationError(f"Вы уже подписаны на автора {following}") 
-#         data['following'] = following
-#         data['user'] = user
-#         return data

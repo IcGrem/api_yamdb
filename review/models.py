@@ -40,7 +40,7 @@ class Title(models.Model):
     name = models.CharField(max_length=200)
     year = models.PositiveSmallIntegerField(null=True)
     description = models.TextField(null=True, blank=True)
-    category = models.ForeignKey(Category, on_delete=models.PROTECT, null=True, blank=True, related_name="categories")
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="categories")#null=True, blank=True, 
     genre = models.ManyToManyField(Genre, related_name="genres")
 
     def __str__(self):

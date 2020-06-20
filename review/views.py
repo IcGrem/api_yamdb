@@ -40,6 +40,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     #filter_backends = [filters.SearchFilter]
     #search_fields = ['=genres__slug']
     filter_class = GenreFilter
+    #filter_class = CategoryFilter
     # def perform_create(self, serializer):
     #     serializer.save(genres=self.genres, categories=self.categories)
 

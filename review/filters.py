@@ -1,17 +1,20 @@
 from django_filters import rest_framework as filters
-from review.models import Title, Genre
-    
+from review.models import Title, Genre, Category
+
+
 class GenreFilter(filters.FilterSet):
-    #slug = filters.ModelChoiceFilter(queryset=Genre.objects.all())
-    genre_filter = filters.CharFilter(field_name="genre__slug", lookup_expr='exact')
-    #print(slug)
+    genre = filters.CharFilter(field_name="genre__slug", method='filter_genre')
+    category = filters.CharFilter(field_name="category__slug", method='filter_cat')
+    year = filters.CharFilter(field_name="year", lookup_expr='iexact')
+    name = filters.CharFilter(field_name="name", lookup_expr='icontains')
+    
     class Meta:
         model = Title
-        fields = ['genre_filter']
+        fields = ['genre', 'category', 'year', 'name']
 
-    # """Filter for books by author"""
-    # author = ModelChoiceFilter(queryset=Author.objects.all())
+    def filter_genre(self, queryset, slug, genre):
+        return queryset.filter(genre__slug__contains=genre)
+    
+    def filter_cat(self, queryset, slug, category):
+        return queryset.filter(category__slug__contains=category)
 
-    # class Meta:
-    #     model = Book
-    #     fields = ['author']

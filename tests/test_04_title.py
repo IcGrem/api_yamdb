@@ -109,6 +109,7 @@ class Test04TitleAPI:
             'Проверьте, что при GET запросе `/api/v1/titles/` фильтуется по `year` параметру года'
         response = user_client.get(f'/api/v1/titles/?name=Поворот')
         data = response.json()
+        print(response.json())
         assert len(data['results']) == 2, \
             'Проверьте, что при GET запросе `/api/v1/titles/` фильтуется по `name` параметру названия'
 

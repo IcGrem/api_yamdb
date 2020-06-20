@@ -38,9 +38,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
             )
         user = User.objects.create(
-            username=quote(payload),
+            username=email.replace('@', '_').replace('.', '_'),
             email=email,
-            is_active=False,
             confirmation_code=confirmation_code
         )
         send_mail(
@@ -58,14 +57,13 @@ class MyAuthTokenSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ( 'email', 'confirmation_code')
+        fields = ('email', 'confirmation_code')
 
     def validate(self, data):
         email = self.initial_data['email']
         confirmation_code = data['confirmation_code']
         user = User.objects.get(email=email)
         if confirmation_code == user.confirmation_code:
-            user.is_active = True
             user.save()
             refresh = TokenObtainPairSerializer.get_token(user)
             del data['email']

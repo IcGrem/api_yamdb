@@ -1,24 +1,30 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.conf import settings
+from .managers import UserManager
 
 
-class User(AbstractUser):
+class User(AbstractBaseUser):
     USER_ROLES = (
         ('user', 'user'),
         ('moderator', 'moderator'),
         ('admin', 'admin'),
     )
+
     email = models.EmailField(unique=True)
     confirmation_code = models.CharField(max_length=16, blank=True, null=True)
+    first_name = models.CharField(max_length=200, blank=True)
+    last_name = models.CharField(max_length=200, blank=True)
     bio = models.TextField(blank=True, null=True)
     role = models.CharField(max_length=10, choices=USER_ROLES, default='user')
-    username = models.CharField(max_length=30, unique=True, blank=True, null=True)  
+    username = models.SlugField(unique=True, blank=True, null=True)
+    objects = UserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
     def __str__(self):
         return self.email
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -62,7 +68,7 @@ class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment_author")
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="comment")
     text = models.TextField()
-    created = models.DateTimeField("Дата комментария", auto_now_add=True, db_index=True)
+    pub_date = models.DateTimeField("Дата комментария", auto_now_add=True, db_index=True)
 
     def __str__(self):
         return self.text

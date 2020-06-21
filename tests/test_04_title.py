@@ -39,6 +39,7 @@ class Test04TitleAPI:
         assert response.status_code == 200, \
             'Проверьте, что при GET запросе `/api/v1/titles/` возвращает статус 200'
         data = response.json()
+        print(data)
         assert 'count' in data, \
             'Проверьте, что при GET запросе `/api/v1/titles/` возвращаете данные с пагинацией. ' \
             'Не найден параметр `count`'

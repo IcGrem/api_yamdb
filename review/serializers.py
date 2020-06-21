@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.db.models import Avg
+from urllib.parse import quote
 
 
 def encode(text):
@@ -14,6 +15,7 @@ def encode(text):
     base64_bytes = base64.b64encode(enc_bytes)
     base64_enc = base64_bytes.decode('ascii')
     return base64_enc
+
 
 def decode(text):
     base64_bytes = text.encode('ascii')
@@ -26,9 +28,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email',)
-    
+
     def create(self, validated_data):
         email = validated_data['email']
+        payload = email
         if (email and User.objects.filter(email=email).exists()):
             raise serializers.ValidationError(
                 {'email': 'Email addresses must be unique.'}
@@ -36,11 +39,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         confirmation_code = encode(
             ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
             )
-        usename = email.replace('@','_').replace('.','_')
         user = User.objects.create(
-            username=usename,
+            username=email.replace('@', '_').replace('.', '_'),
             email=email,
-            is_active=False,
             confirmation_code=confirmation_code
         )
         send_mail(
@@ -49,23 +50,22 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             'from@example.com',
             [f'{user.email}'],
             fail_silently=False,
-        )
+        )       
         return self.data['email']
 
-        
+
 class MyAuthTokenSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
-    
+
     class Meta:
         model = User
-        fields = ( 'email', 'confirmation_code')
-    
+        fields = ('email', 'confirmation_code')
+
     def validate(self, data):
         email = self.initial_data['email']
         confirmation_code = data['confirmation_code']
         user = User.objects.get(email=email)
         if confirmation_code == user.confirmation_code:
-            user.is_active = True
             user.save()
             refresh = TokenObtainPairSerializer.get_token(user)
             del data['email']
@@ -121,18 +121,25 @@ class TitleSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
-    #title = serializers.ReadOnlyField(source='title_id')
+    #title = serializers.CharField(source='title.id', read_only=True)
     
     class Meta:
-        fields = ('id', 'text', 'author', 'score', 'pub_date')
+        fields = ('id', 'text', 'author', 'score', 'pub_date')#, 'title')
         model = Review
-        read_only_fields = ('id',)
+        #read_only_fields = ('title',)
+
+    def validate(self, data):
+        if int(self.initial_data['score']) not in range(1, 11):
+            raise serializers.ValidationError(f"The score must be in range from 1 to 10")
+        return data
+
 
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
 
     class Meta:
-        fields = ('id', 'author', 'text', 'created', 'review')
+        fields = ('id', 'author', 'text', 'pub_date')#, 'review')
         model = Comment
+        #read_only_fields = ('review',)
 

@@ -106,6 +106,7 @@ def create_comments(user_client, admin):
     def create_comment(uclient, title_id, review_id, text):
         data = {'text': text}
         response = uclient.post(f'/api/v1/titles/{title_id}/reviews/{review_id}/comments/', data=data)
+        print(title_id, '=', review_id, 'коммент -', response.json())#remove
         return response.json()['id']
 
     reviews, titles, user, moderator = create_reviews(user_client, admin)

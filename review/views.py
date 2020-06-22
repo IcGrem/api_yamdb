@@ -1,4 +1,4 @@
-from rest_framework import permissions, viewsets, generics, filters, status
+from rest_framework import permissions, viewsets, filters, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 import django_filters.rest_framework
@@ -7,7 +7,6 @@ from .models import Review, Comment
 from api.models import Category, Genre, Title
 from users.models import User
 from .serializers import ReviewSerializer, CommentSerializer
-)
 from users.permissions import (
     IsAdminPermission,
     IsModeratorPermission,

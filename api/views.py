@@ -1,14 +1,18 @@
 from django.shortcuts import render
-from rest_framework import viewsets, status, filters
-from .models import Categories, Genre, Title
+from rest_framework import permissions, viewsets, status, filters
+from .models import Category, Genre, Title
 from .serializers import (
-    CategoriesSerializer,
+    CategorySerializer,
     GenreSerializer,
     TitleSerializer,
 )
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from users.permissions import IsAdminPermission, IsModeratorPermission, IsOwnerPermission
+from users.permissions import (
+    IsAdminPermission,
+    IsModeratorPermission,
+    IsOwnerPermission
+)
 from rest_framework.exceptions import MethodNotAllowed
 from django.http import Http404
 from .filters import GenreFilter

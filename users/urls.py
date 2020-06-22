@@ -8,12 +8,6 @@ user_routers = DefaultRouter()
 user_routers.register('', UserViewSet)
 
 urlpatterns = [
-    #path('titles/', TitleViewSet.as_view()),
-    #path('categories/', CategoryViewSet.as_view()),
-    #path('genres/', GenreViewSet.as_view()),
-    # path(r'users/me/', UserMeViews.as_view()),
-    # path(r'users/<str:username>/', UserAdminViewSet.as_view()),
-    # path(r'users/', UserAdminViewSet.as_view()),
     path('users/', include(user_routers.urls)),
     path('auth/email/', RegisterView.as_view()),
     path('auth/token/', ObtainAuthToken.as_view())

@@ -49,11 +49,11 @@
 "rating"|number|Рейтинг на основе отзывов
 "description"|"string"|Описание
 "genre"|Array of objects|Жанр
-  |"name"|Название жанра
-  |"slug"|Поле "slug" 
+||"name"|Название жанра
+||"slug"|Поле "slug" 
 "category"|objects|Категория
-  |"name"|Название категории объекта
-  |"slug"|Поле "slug" 
+||"name"|Название категории объекта
+||"slug"|Поле "slug" 
   
 **POST /auth/email/** - передача confirmation_code на адрес эл.почты  
 Запрос:  
@@ -71,7 +71,7 @@ email|"string"|адрес эл.почты
 confirmation_code|"string"|код подтверждения
 
 **PATCH /users/me/** - изменить данные своей учетной записи  
-Запрос (200):  
+Запрос:  
 Ключ|Значение|Описание
 ----|--------|--------
 "first_name"|"string"|Имя

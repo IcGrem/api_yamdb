@@ -9,7 +9,6 @@ class IsModeratorPermission(permissions.BasePermission):
 
 class IsAdminPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        # return getattr(request.user, 'role', '') == 'admin'
         try:
             if view.kwargs['username'] == 'me' and request.user.role:
                 return True

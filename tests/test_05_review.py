@@ -8,9 +8,7 @@ class Test05ReviewAPI:
     @pytest.mark.django_db(transaction=True)
     def test_01_review_not_auth(self, client, user_client):
         titles, _, _ = create_titles(user_client)
-        print(titles[0]["id"])
         response = client.get(f'/api/v1/titles/{titles[0]["id"]}/reviews/')
-        print(response)
         assert response.status_code != 404, \
             'Страница `/api/v1/titles/{title_id}/reviews/` не найдена, проверьте этот адрес в *urls.py*'
         assert response.status_code == 200, \
@@ -65,7 +63,6 @@ class Test05ReviewAPI:
             'с `score` меньше 1 возвращается статус 400.'
         data = {'text': 'аывв', 'score': 2}
         response = user_client.post(f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data)
-        print('Респонс -', titles[0]["id"])
         assert response.status_code == 400, \
             'Проверьте, что при POST запросе `/api/v1/titles/{title_id}/reviews/` ' \
             'на уже оставленный отзыв для объекта возвращается статус 400.'
@@ -231,7 +228,6 @@ class Test05ReviewAPI:
     @pytest.mark.django_db(transaction=True)
     def test_04_reviews_check_permission(self, client, user_client, admin):
         reviews, titles, user, moderator = create_reviews(user_client, admin)
-        print('reviews_check_permission =', reviews, titles, user, moderator)
         data = {'text': 'jdfk', 'score': 7}
         response = client.post(f'/api/v1/titles/{titles[0]["id"]}/reviews/', data=data)
         assert response.status_code == 401, \

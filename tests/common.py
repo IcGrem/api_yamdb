@@ -10,7 +10,6 @@ def create_users_api(user_client):
         'email': 'testuser@yamdb.fake'
     }
     user_client.post('/api/v1/users/', data=data)
-    print(data)
     user = get_user_model().objects.get(username=data['username'])
     data = {
         'first_name': 'fsdfsdf',
@@ -62,14 +61,11 @@ def create_genre(user_client):
 
 def create_titles(user_client):
     genres = create_genre(user_client)
-    print(genres)
     categories = create_categories(user_client)
-    print(categories)
     result = []
     data = {'name': 'Поворот туда', 'year': 2000, 'genre': [genres[0]['slug'], genres[1]['slug']],
             'category': categories[0]['slug'], 'description': 'Крутое пике'}
     response = user_client.post('/api/v1/titles/', data=data)
-    print(response.json())
     data['id'] = response.json()['id']
     result.append(data)
     data = {'name': 'Проект', 'year': 2020, 'genre': [genres[2]['slug']], 'category': categories[1]['slug'],
@@ -77,7 +73,6 @@ def create_titles(user_client):
     response = user_client.post('/api/v1/titles/', data=data)
     data['id'] = response.json()['id']
     result.append(data)
-    print(result, categories, genres)
     return result, categories, genres
 
 
@@ -85,7 +80,6 @@ def create_reviews(user_client, admin):
     def create_review(uclient, title_id, text, score):
         data = {'text': text, 'score': score}
         response = uclient.post(f'/api/v1/titles/{title_id}/reviews/', data=data)
-        print(title_id, '===', response.json())#remove
         return response.json()['id']
 
     titles, _, _ = create_titles(user_client)
@@ -106,7 +100,6 @@ def create_comments(user_client, admin):
     def create_comment(uclient, title_id, review_id, text):
         data = {'text': text}
         response = uclient.post(f'/api/v1/titles/{title_id}/reviews/{review_id}/comments/', data=data)
-        print(title_id, '=', review_id, 'коммент -', response.json())#remove
         return response.json()['id']
 
     reviews, titles, user, moderator = create_reviews(user_client, admin)

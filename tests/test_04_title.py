@@ -23,7 +23,6 @@ class Test04TitleAPI:
             'Проверьте, что при POST запросе `/api/v1/titles/` с не правильными данными возвращает статус 400'
         data = {'name': 'Поворот туда', 'year': 2000, 'genre': [genres[0]['slug'], genres[1]['slug']],
                 'category': categories[0]['slug'], 'description': 'Крутое пике'}
-        print(data)#remove
         response = user_client.post('/api/v1/titles/', data=data)
         assert response.status_code == 201, \
             'Проверьте, что при POST запросе `/api/v1/titles/` с правильными данными возвращает статус 201'
@@ -39,7 +38,6 @@ class Test04TitleAPI:
         assert response.status_code == 200, \
             'Проверьте, что при GET запросе `/api/v1/titles/` возвращает статус 200'
         data = response.json()
-        print(data)
         assert 'count' in data, \
             'Проверьте, что при GET запросе `/api/v1/titles/` возвращаете данные с пагинацией. ' \
             'Не найден параметр `count`'
@@ -96,8 +94,6 @@ class Test04TitleAPI:
         user_client.post('/api/v1/titles/', data=data)
         response = user_client.get(f'/api/v1/titles/?genre={genres[1]["slug"]}')
         data = response.json()
-        print(genres[1]["slug"])
-        print(response.json())
         assert len(data['results']) == 2, \
             'Проверьте, что при GET запросе `/api/v1/titles/` фильтуется по `genre` параметру `slug` жанра'
         response = user_client.get(f'/api/v1/titles/?category={categories[0]["slug"]}')
@@ -110,7 +106,6 @@ class Test04TitleAPI:
             'Проверьте, что при GET запросе `/api/v1/titles/` фильтуется по `year` параметру года'
         response = user_client.get(f'/api/v1/titles/?name=Поворот')
         data = response.json()
-        print(response.json())
         assert len(data['results']) == 2, \
             'Проверьте, что при GET запросе `/api/v1/titles/` фильтуется по `name` параметру названия'
 

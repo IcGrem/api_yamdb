@@ -43,17 +43,17 @@
 Ответ (200):  
 Ключ|Значение|Описание
 ----|--------|--------
-"id"|0|ID произведения
+"id"|number|ID произведения
 "name"|"string"|Название
 "year"|number|Год выпуска
 "rating"|number|Рейтинг на основе отзывов
 "description"|"string"|Описание
 "genre"|Array of objects|Жанр
- |"name"|Название жанра
- |"slug"|Поле "slug" 
+  |"name"|Название жанра
+  |"slug"|Поле "slug" 
 "category"|objects|Категория
- |"name"|Название категории объекта
- |"slug"|Поле "slug" 
+  |"name"|Название категории объекта
+  |"slug"|Поле "slug" 
   
 **POST /auth/email/** - передача confirmation_code на адрес эл.почты  
 Запрос:  

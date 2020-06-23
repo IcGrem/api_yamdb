@@ -91,5 +91,5 @@ confirmation_code|"string"|код подтверждения
 "role"|"string"| Enum: "user" "moderator" "admin"  
 
 
-Более подробную информацию о методах данного API можно получить по адресу http://localhost:8000/redoc/ 
+__**Более подробную информацию о методах данного API можно получить по адресу http://localhost:8000/redoc/**__
 

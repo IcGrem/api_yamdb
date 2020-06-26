@@ -1,5 +1,5 @@
-from django.db import models
 import datetime
+from django.db import models
 
 
 class Category(models.Model):
@@ -23,12 +23,11 @@ class Title(models.Model):
     year = models.PositiveSmallIntegerField(null=True)
     description = models.TextField(null=True, blank=True)
     category = models.ForeignKey(
-                                Category,
-                                on_delete=models.PROTECT,
-                                related_name="categories"
-                                )
+        Category,
+        on_delete=models.PROTECT,
+        related_name="categories"
+    )
     genre = models.ManyToManyField(Genre, related_name="genres")
 
     def __str__(self):
         return self.name
-

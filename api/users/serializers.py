@@ -1,13 +1,17 @@
-from rest_framework import serializers
-from .models import User
-from rest_framework.exceptions import ValidationError
-import random, string, base64, datetime
+import base64
+import datetime
+import random
+import string
+from django.core.cache import cache
 from django.core.mail import send_mail
+from django.utils import timezone
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from urllib.parse import quote
-from django.utils import timezone
-from django.core.cache import cache
+
+from .models import User
 
 
 def encode(text):
@@ -25,11 +29,11 @@ def decode(text):
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = User
         fields = ('email',)
-    
+
     def create(self, validated_data):
         email = validated_data['email']
         payload = email
@@ -38,11 +42,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 {'email': 'Email addresses must be unique.'}
             )
         confirmation_code = encode(
-            ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+            ''.join(random.choice(
+                string.ascii_uppercase + string.digits
+                ) for _ in range(8))
             )
-        username=email.replace('@', '_').replace('.', '_')
-        email=email
-        c_c=confirmation_code
+        username = email.replace('@', '_').replace('.', '_')
+        email = email
+        c_c = confirmation_code
         cache.set_many({'u': username, 'e': email, 'c_c': c_c}, timeout=300)
         send_mail(
             'Ваш код подтверждения',
@@ -56,11 +62,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 class MyAuthTokenSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
-    
+
     class Meta:
         model = User
         fields = ('email', 'confirmation_code')
-    
+
     def validate(self, data):
         send_email = self.initial_data['email']
         send_confirmation_code = data['confirmation_code']

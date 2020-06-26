@@ -1,22 +1,22 @@
-from django.shortcuts import render
+from django.http import Http404
+from django.shortcuts import render, get_object_or_404
 from rest_framework import permissions, viewsets, status, filters
+from rest_framework.exceptions import MethodNotAllowed
+from rest_framework.response import Response
+
+from api.users.permissions import (
+    IsAdminPermission,
+    IsModeratorPermission,
+    IsOwnerPermission
+)
+
+from .filters import GenreFilter
 from .models import Category, Genre, Title
 from .serializers import (
     CategorySerializer,
     GenreSerializer,
     TitleSerializer,
 )
-from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
-from api.users.permissions import (
-    IsAdminPermission,
-    IsModeratorPermission,
-    IsOwnerPermission
-)
-from rest_framework.exceptions import MethodNotAllowed
-from django.http import Http404
-from .filters import GenreFilter
-
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -52,7 +52,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
             queryset = self.filter_queryset(self.get_queryset())
             obj = get_object_or_404(queryset, **filter_kwargs)
         except Http404:
-            if self.request.method in ['DELETE','GET','PATCH']:
+            if self.request.method in ['DELETE', 'GET', 'PATCH']:
                 raise MethodNotAllowed(self.request.method)
             raise Http404
         # May raise a permission denied
@@ -88,7 +88,7 @@ class GenreViewSet(viewsets.ModelViewSet):
             queryset = self.filter_queryset(self.get_queryset())
             obj = get_object_or_404(queryset, **filter_kwargs)
         except Http404:
-            if self.request.method in ['DELETE','GET','PATCH']:
+            if self.request.method in ['DELETE', 'GET', 'PATCH']:
                 raise MethodNotAllowed(self.request.method)
             raise Http404
         # May raise a permission denied

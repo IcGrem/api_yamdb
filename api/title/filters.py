@@ -1,13 +1,14 @@
 from django_filters import rest_framework as filters
+
 from .models import Title, Genre, Category
 
 
 class GenreFilter(filters.FilterSet):
     genre = filters.CharFilter(field_name="genre__slug", method='filter_genre')
     category = filters.CharFilter(
-                                 field_name="category__slug",
-                                 method='filter_cat'
-                                 )
+        field_name="category__slug",
+        method='filter_cat'
+    )
     year = filters.CharFilter(field_name="year", lookup_expr='iexact')
     name = filters.CharFilter(field_name="name", lookup_expr='icontains')
 

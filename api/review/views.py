@@ -1,23 +1,26 @@
-from rest_framework import permissions, viewsets, filters, status
-from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
 import django_filters.rest_framework
 from django.shortcuts import get_object_or_404
-from .models import Review, Comment
+from rest_framework import filters, permissions, status, viewsets
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+
 from api.title.models import Category, Genre, Title
 from api.users.models import User
-from .serializers import ReviewSerializer, CommentSerializer
 from api.users.permissions import (
     IsAdminPermission,
     IsModeratorPermission,
     IsOwnerPermission,
 )
 
+from .models import Review, Comment
+from .serializers import ReviewSerializer, CommentSerializer
+
+
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
-        title_id=self.kwargs.get('title_id')
+        title_id = self.kwargs.get('title_id')
         queryset = Review.objects.filter(title_id=title_id)
         return queryset.order_by('-pub_date')
 
@@ -44,8 +47,10 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
         review_id = self.kwargs.get('review_id')
-        queryset = Comment.objects.filter(review__title_id=title_id,
-                                          review_id=review_id)
+        queryset = Comment.objects.filter(
+            review__title_id=title_id,
+            review_id=review_id
+        )
         return queryset.order_by('-pub_date')
 
     def get_permissions(self):

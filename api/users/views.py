@@ -3,8 +3,8 @@ from rest_framework import viewsets, status, generics, permissions
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .permissions import IsAdminPermission, IsModeratorPermission
-from users.models import User
-from users.serializers import (
+from .models import User
+from .serializers import (
     UserRegistrationSerializer,
     MyAuthTokenSerializer,
     UserSerializer

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Review, Comment
-from api.models import Category, Genre, Title
-from users.models import User
+from api.title.models import Category, Genre, Title
+from api.users.models import User
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import (
                     ValidationError,

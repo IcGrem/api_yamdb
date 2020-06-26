@@ -8,7 +8,7 @@ from .serializers import (
 )
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from users.permissions import (
+from api.users.permissions import (
     IsAdminPermission,
     IsModeratorPermission,
     IsOwnerPermission

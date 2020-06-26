@@ -1,11 +1,13 @@
 from rest_framework import serializers
 from .models import User
 from rest_framework.exceptions import ValidationError
-import random, string, base64
+import random, string, base64, datetime
 from django.core.mail import send_mail
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from urllib.parse import quote
+from django.utils import timezone
+from django.core.cache import cache
 
 
 def encode(text):
@@ -23,10 +25,11 @@ def decode(text):
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = User
         fields = ('email',)
-
+    
     def create(self, validated_data):
         email = validated_data['email']
         payload = email
@@ -37,16 +40,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         confirmation_code = encode(
             ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
             )
-        user = User.objects.create(
-            username=email.replace('@', '_').replace('.', '_'),
-            email=email,
-            confirmation_code=confirmation_code
-        )
+        username=email.replace('@', '_').replace('.', '_')
+        email=email
+        c_c=confirmation_code
+        cache.set_many({'u': username, 'e': email, 'c_c': c_c}, timeout=300)
         send_mail(
             'Ваш код подтверждения',
             confirmation_code,
             'from@example.com',
-            [f'{user.email}'],
+            [f'{email}'],
             fail_silently=False,
         )       
         return self.data['email']
@@ -54,20 +56,30 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 class MyAuthTokenSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
-
+    
     class Meta:
         model = User
         fields = ('email', 'confirmation_code')
-
+    
     def validate(self, data):
-        email = self.initial_data['email']
-        confirmation_code = data['confirmation_code']
-        user = User.objects.get(email=email)
-        if confirmation_code == user.confirmation_code:
+        send_email = self.initial_data['email']
+        send_confirmation_code = data['confirmation_code']
+        data = cache.get_many(['u', 'e', 'c_c'])
+        if not data:
+            raise serializers.ValidationError(
+                'Время подтверждения регистрации истекло'
+            )
+        username = data['u']
+        email = data['e']
+        confirmation_code = data['c_c']
+        if send_confirmation_code == confirmation_code:
+            user = User.objects.create(
+                username=username,
+                email=email,
+                confirmation_code=confirmation_code
+            )
             user.save()
             refresh = TokenObtainPairSerializer.get_token(user)
-            del data['email']
-            del data['confirmation_code']
             data['token'] = str(refresh.access_token)
             return data
 
@@ -75,4 +87,11 @@ class MyAuthTokenSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'username', 'bio', 'role')
+        fields = (
+            'email',
+            'first_name',
+            'last_name',
+            'username',
+            'bio',
+            'role'
+        )

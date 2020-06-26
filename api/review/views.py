@@ -4,10 +4,10 @@ from rest_framework.response import Response
 import django_filters.rest_framework
 from django.shortcuts import get_object_or_404
 from .models import Review, Comment
-from api.models import Category, Genre, Title
-from users.models import User
+from api.title.models import Category, Genre, Title
+from api.users.models import User
 from .serializers import ReviewSerializer, CommentSerializer
-from users.permissions import (
+from api.users.permissions import (
     IsAdminPermission,
     IsModeratorPermission,
     IsOwnerPermission,

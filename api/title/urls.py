@@ -1,9 +1,6 @@
 from rest_framework.routers import DefaultRouter
-#from rest_framework.authtoken import views
 from .views import CategoryViewSet, GenreViewSet, TitleViewSet
 from django.urls import path, include
-#from rest_framework.authtoken import views
-#from rest_framework_nested import routers
 
 
 router = DefaultRouter()
